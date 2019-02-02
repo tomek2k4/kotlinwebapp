@@ -1,10 +1,24 @@
 package com.tmaslon.example.kotlinwebapp
 
-import spark.Spark
+import com.tmaslon.example.kotlinwebapp.injection.component.DaggerServiceComponent
+import com.tmaslon.example.kotlinwebapp.injection.component.ServiceComponent
 
 class ServiceRunner {
 
-    fun run(){
-        Spark.get("/hello", { req, res -> "Hello Spark!!!"})
+    companion object {
+        //platformStatic allow access it from java code
+        lateinit var serviceComponent: ServiceComponent
+    }
+
+    init {
+        serviceComponent = DaggerServiceComponent.create()
+    }
+
+    fun run() {
+        initControllers()
+    }
+
+    private fun initControllers() {
+        ServiceController()
     }
 }
