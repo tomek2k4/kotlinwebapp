@@ -1,5 +1,6 @@
 package com.tmaslon.example.kotlinwebapp.injection.module
 
+import com.google.gson.Gson
 import com.tmaslon.example.kotlinwebapp.database.DatabaseHelper
 import com.tmaslon.example.kotlinwebapp.database.DatabaseHelperImpl
 import dagger.Binds
@@ -16,6 +17,10 @@ abstract class ServiceModule {
         @JvmStatic
         @Provides
         fun provideDataSource(): DataSource = HikariCP.default("jdbc:h2:mem:bank", "user", "pass")
+
+        @JvmStatic
+        @Provides
+        fun provideGson(): Gson = Gson()
     }
 
     @Binds

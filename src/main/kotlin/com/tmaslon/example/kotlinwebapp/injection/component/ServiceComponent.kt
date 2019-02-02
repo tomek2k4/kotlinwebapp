@@ -9,5 +9,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [ServiceModule::class])
 interface ServiceComponent {
+    fun plusUserComponent(): UserComponent
+
     fun inject(serviceController: ServiceController)
 }
