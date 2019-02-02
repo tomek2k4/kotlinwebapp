@@ -1,5 +1,6 @@
 package com.tmaslon.example.kotlinwebapp
 
+import com.tmaslon.example.kotlinwebapp.controllers.ServiceController
 import com.tmaslon.example.kotlinwebapp.injection.component.DaggerServiceComponent
 import com.tmaslon.example.kotlinwebapp.injection.component.ServiceComponent
 

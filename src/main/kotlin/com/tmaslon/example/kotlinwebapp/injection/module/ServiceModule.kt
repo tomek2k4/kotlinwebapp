@@ -1,14 +1,23 @@
 package com.tmaslon.example.kotlinwebapp.injection.module
 
-import com.tmaslon.example.kotlinwebapp.injection.User
+import com.tmaslon.example.kotlinwebapp.database.DatabaseHelper
+import com.tmaslon.example.kotlinwebapp.database.DatabaseHelperImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
+import kotliquery.HikariCP
+import javax.sql.DataSource
 
 @Module
-class ServiceModule {
+abstract class ServiceModule {
 
-    @Singleton
-    @Provides
-    fun user() = User()
+    @Module
+    companion object {
+        @JvmStatic
+        @Provides
+        fun provideDataSource(): DataSource = HikariCP.default("jdbc:h2:mem:bank", "user", "pass")
+    }
+
+    @Binds
+    abstract fun bindsDatabaseHelper(databaseHelper: DatabaseHelperImpl): DatabaseHelper
 }

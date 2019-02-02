@@ -1,5 +1,7 @@
 package com.tmaslon.example.kotlinwebapp.injection
 
-class User {
+import javax.inject.Inject
+
+class User @Inject constructor() {
     fun getName() = "Tomek"
 }

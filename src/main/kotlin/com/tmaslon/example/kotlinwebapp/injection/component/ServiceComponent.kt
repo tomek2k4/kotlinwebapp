@@ -1,6 +1,6 @@
 package com.tmaslon.example.kotlinwebapp.injection.component
 
-import com.tmaslon.example.kotlinwebapp.ServiceController
+import com.tmaslon.example.kotlinwebapp.controllers.ServiceController
 import com.tmaslon.example.kotlinwebapp.injection.module.ServiceModule
 import dagger.Component
 import javax.inject.Singleton
