@@ -13,5 +13,4 @@ interface UserRepository {
         override fun getAllUsers(): List<User> =
             usersDao.getUsers()
     }
-
 }

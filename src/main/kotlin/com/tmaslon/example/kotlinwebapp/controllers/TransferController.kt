@@ -2,6 +2,7 @@ package com.tmaslon.example.kotlinwebapp.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tmaslon.example.kotlinwebapp.ServiceRunner
+import com.tmaslon.example.kotlinwebapp.api.TransferRequest
 import com.tmaslon.example.kotlinwebapp.services.TransferService
 import com.tmaslon.example.kotlinwebapp.services.UserService
 import spark.Spark.*
@@ -38,13 +39,21 @@ class TransferController {
                         badRequest("Transfer needs to have a body")
                 }
                 post("") { req, res ->
+                    val holder = req.params(":user").toLong()
                     val transfer = mapper.readTree(req.body())
                     if (transfer.has("amount").not() || transfer.has("account_to").not()) {
                         badRequest("Transfer needs to have amount and account_to filled")
                     } else {
-
+                        val transferResp = transferService.transfer(
+                            TransferRequest(holder, transfer.get("amount").asDouble(), transfer.get("account_to").asLong())
+                        )
+                        mapper.writeValueAsString(transferResp)
                     }
                 }
+            }
+            get("/users") { req, res ->
+                val users = userService.getAllUsers()
+                mapper.writeValueAsString(users)
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.tmaslon.example.kotlinwebapp.injection.module
 
+import com.tmaslon.example.kotlinwebapp.repositories.TransferTransactionExecutor
+import com.tmaslon.example.kotlinwebapp.repositories.TransferTransactionExecutorImpl
 import com.tmaslon.example.kotlinwebapp.repositories.UserRepository
 import com.tmaslon.example.kotlinwebapp.repositories.dao.UserDao
 import com.tmaslon.example.kotlinwebapp.repositories.dao.UserDaoImpl
@@ -24,4 +26,8 @@ abstract class TransferModule {
 
     @Binds
     abstract fun bindTransferService(transferService: TransferServiceImpl): TransferService
+
+    @Binds
+    abstract fun bindTransferTransactionExecutor(transferTransactionExecutor: TransferTransactionExecutorImpl)
+            : TransferTransactionExecutor
 }
