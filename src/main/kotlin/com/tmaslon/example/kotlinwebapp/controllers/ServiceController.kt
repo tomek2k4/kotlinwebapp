@@ -18,7 +18,6 @@ class ServiceController {
     }
 
     private fun initRoutes() {
-        UserController().initRoute()
-        get("/hello", { req, res -> "Hello Spark" })
+        TransferController().initRoute()
     }
 }
