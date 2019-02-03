@@ -5,6 +5,7 @@ import com.tmaslon.example.kotlinwebapp.ServiceRunner
 import com.tmaslon.example.kotlinwebapp.api.TransferRequest
 import com.tmaslon.example.kotlinwebapp.services.TransferService
 import com.tmaslon.example.kotlinwebapp.services.UserService
+import spark.Request
 import spark.Spark.*
 import javax.inject.Inject
 
@@ -25,14 +26,8 @@ class TransferController {
 
     fun initRoute() {
         path("/:user") {
-            before("") { req, _ ->
-                val userParam = req.params(":user")
-                ServiceRunner.logger.info("Received action for user id: $userParam")
-                userParam.toLongOrNull()?.let {
-                    if (userService.isValidUser(it).not()) unauthorized("Unauthorized user")
-                } ?: badRequest("User id should be a number")
-            }
-
+            before("") { req, _ -> verifyUser(req) }
+            before("/*") { req, _ -> verifyUser(req) }
             path("/transfer") {
                 before("") { req, _ ->
                     if (req.body().isEmpty())
@@ -56,6 +51,14 @@ class TransferController {
                 mapper.writeValueAsString(users)
             }
         }
+    }
+
+    private fun verifyUser(req: Request) {
+        val userParam = req.params(":user")
+        ServiceRunner.logger.info("Received action for user id: $userParam")
+        userParam.toLongOrNull()?.let {
+            if (userService.isValidUser(it).not()) unauthorized("Unauthorized user")
+        } ?: badRequest("User id should be a number")
     }
 
     private fun badRequest(reason: String) = halt(400, reason)
