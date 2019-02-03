@@ -36,4 +36,10 @@ class TransferControllerTest {
         val get = Fuel.get("http://localhost:4567/123").responseString()
         Assert.assertEquals(401, get.second.httpStatusCode)
     }
+
+    @Test
+    fun `receive bad request response for empty body in request`() {
+        val get = Fuel.get("http://localhost:4567/1/transfer").responseString()
+        Assert.assertEquals(400, get.second.httpStatusCode)
+    }
 }
