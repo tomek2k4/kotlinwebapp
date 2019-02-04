@@ -1,8 +1,8 @@
-# kotlin-restful-webapp
+# kotlinwebapp
 Example implementation of money transfers
 
 ## Flow
-![transfer flow](https://raw.githubusercontent.com/tomek2k4/kotlin-restful-webapp/master/img/transfer_flow.png)
+![transfer flow](https://raw.githubusercontent.com/tomek2k4/kotlinwebapp/master/img/transfer_flow.png)
 
 ### TransferRequest
 ```
