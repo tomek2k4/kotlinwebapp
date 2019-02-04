@@ -7,4 +7,5 @@ interface UserService {
     fun isValidUser(userId: Long): Boolean
     fun getUserBalance(userId: Long): Double
     fun getAllUsers(): List<User>
+    fun getUser(userId: Long): User
 }

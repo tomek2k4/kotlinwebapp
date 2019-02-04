@@ -8,6 +8,7 @@ import com.tmaslon.example.kotlinwebapp.repositories.TransferTransactionExecutor
 import java.util.concurrent.locks.ReadWriteLock
 import javax.inject.Inject
 import kotlin.concurrent.withLock
+import kotlin.math.abs
 
 class TransferServiceImpl
 @Inject constructor(
@@ -16,25 +17,32 @@ class TransferServiceImpl
     private val transferTransactionExecutor: TransferTransactionExecutor
 ) : TransferService {
 
+    companion object {
+        private const val BALANCE_TOLERANCE = 0.0001
+    }
+
     override fun transfer(transferRequest: TransferRequest): TransferResponse {
         transferRequest.validateTransferInput()?.let { return it }
 
-//        return readWriteLock.readLock().withLock {
         return execute(transferRequest)
-//        }
     }
 
     private fun TransferRequest.validateTransferInput(): TransferResponse? =
         when {
-            isAmountValid().not() -> TransferResponse(Failure.name, "Amount should be positive value")
-            isRecipientValid().not() -> TransferResponse(Failure.name, "Recipient does not exist")
-            this.holder == this.accountTo -> TransferResponse(Failure.name, "Recipient should be different than holder")
+            isAmountValid().not() ->
+                TransferResponse(Failure.name, "Amount should be positive value")
+            isRecipientValid().not() ->
+                TransferResponse(Failure.name, "Recipient does not exist")
+            this.holder == this.accountTo ->
+                TransferResponse(Failure.name, "Recipient should be different than holder")
             else -> null
         }
 
     private fun execute(transferRequest: TransferRequest): TransferResponse {
         val balance = userService.getUserBalance(transferRequest.holder)
-        if (balance < transferRequest.amount) return TransferResponse(Failure.name, "Insufficient funds on account")
+        if (balance < transferRequest.amount && abs(balance - transferRequest.amount) > BALANCE_TOLERANCE)
+            return TransferResponse(Failure.name, "Insufficient funds on account")
+
         return try {
             readWriteLock.writeLock().withLock {
                 transferTransactionExecutor.execute(transferRequest)

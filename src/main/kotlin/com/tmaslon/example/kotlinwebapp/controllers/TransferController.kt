@@ -1,5 +1,6 @@
 package com.tmaslon.example.kotlinwebapp.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tmaslon.example.kotlinwebapp.ServiceRunner
 import com.tmaslon.example.kotlinwebapp.api.TransferRequest
@@ -28,34 +29,38 @@ class TransferController {
         path("/:user") {
             before("") { req, _ -> verifyUser(req) }
             before("/*") { req, _ -> verifyUser(req) }
+            get("") { req, res ->
+                val user = req.params(":user").toLong()
+                mapper.writeValueAsString(userService.getUser(user))
+            }
             path("/transfer") {
                 before("") { req, _ ->
-                    if (req.body().isEmpty())
-                        badRequest("Transfer needs to have a body")
+                    if (req.body().isEmpty()) badRequest("Transfer needs to have a body")
                 }
                 post("") { req, res ->
                     val holder = req.params(":user").toLong()
                     val transfer = mapper.readTree(req.body())
-                    if (transfer.has("amount").not() || transfer.has("account_to").not()) {
-                        badRequest("Transfer needs to have amount and account_to filled")
-                    } else {
-                        val transferResp = transferService.transfer(
-                            TransferRequest(holder, transfer.get("amount").asDouble(), transfer.get("account_to").asLong())
-                        )
-                        mapper.writeValueAsString(transferResp)
-                    }
+                    if (isValidTransferNode(transfer).not()) badRequest("Transfer needs to have amount and account_to filled")
+                    mapper.writeValueAsString(handleTransfer(holder, transfer))
                 }
-            }
-            get("/users") { req, res ->
-                val users = userService.getAllUsers()
-                mapper.writeValueAsString(users)
             }
         }
     }
 
+    private fun isValidTransferNode(transferNode: JsonNode) =
+        transferNode.has("amount") && transferNode.has("account_to")
+
+    private fun handleTransfer(holderId: Long, transferNode: JsonNode) =
+        transferService.transfer(
+            TransferRequest(
+                holderId,
+                transferNode.get("amount").asDouble(),
+                transferNode.get("account_to").asLong()
+            )
+        )
+
     private fun verifyUser(req: Request) {
         val userParam = req.params(":user")
-        ServiceRunner.logger.info("Received action for user id: $userParam")
         userParam.toLongOrNull()?.let {
             if (userService.isValidUser(it).not()) unauthorized("Unauthorized user")
         } ?: badRequest("User id should be a number")
